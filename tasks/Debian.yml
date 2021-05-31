@@ -30,28 +30,27 @@
   template:
     src: carbon_cache_systemd.j2
     dest: /etc/systemd/system/carbon-cache.service
-  register: ccunit
-
-- name: Reload systemd if unit file has changed
-  shell: systemctl daemon-reload
-  when: ccunit is changed
-  notify: restart carbon-cache
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload systemd for carbon
 
 - name: Install systemd unit carbon-relay.service
   template:
     src: carbon_relay_systemd.j2
     dest: /etc/systemd/system/carbon-relay.service
-  register: ccunit
-
-- name: Reload systemd if unit file has changed
-  shell: systemctl daemon-reload
-  when: ccunit is changed
-  notify: restart carbon-relay
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload systemd for carbon
 
 - name: Install uwsgi graphite config
   template:
     src: uwsgi_graphite.ini.j2
     dest: /etc/uwsgi/apps-available/graphite.ini
+    owner: root
+    group: root
+    mode: 0644
   notify: restart uwsgi
 
 - name: Enable uwsgi graphite config
@@ -67,3 +66,4 @@
     state: directory
     owner: "{{ graphite_user }}"
     group: "{{ graphite_user }}"
+    mode: 0755

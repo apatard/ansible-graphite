@@ -1,5 +1,7 @@
 ---
 galaxy_info:
+  role_name: graphite
+  namespace: nsg
   author: Stefan Berggren
   description: Graphite ansible role
   company:
@@ -33,6 +35,6 @@ galaxy_info:
       versions:
         - jessie
         - stretch
-  categories:
+  galaxy_tags:
     - monitoring
 dependencies: []

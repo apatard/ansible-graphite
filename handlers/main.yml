@@ -11,3 +11,10 @@
 - name: restart uwsgi
   service: name=uwsgi state=restarted
   when: graphite_enable_uwsgi
+
+- name: reload systemd for carbon
+  systemd:
+    daemon_reload: yes
+  notify:
+    - restart carbon-cache
+    - restart carbon-relay

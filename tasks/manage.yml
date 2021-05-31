@@ -30,14 +30,17 @@
   args:
     creates: "{{ graphite_install_path }}/webapp/graphite/.superuser_created"
 
-- name: manage.py - Prepare to set up superuser password
+- name: manage.py - Prepare to set up superuser password  # noqa no-handler
   template:
     src: createsuperuser.py.j2
     dest: /tmp/createsuperuser.py
+    owner: "{{ graphite_user }}"
+    group: "{{ graphite_user }}"
+    mode: 0700
   when: superuser_created is changed
   register: debug2
 
-- name: manage.py - Set superuser password
+- name: manage.py - Set superuser password  # noqa no-handler
   shell: >
     python {{ graphite_install_path }}/webapp/graphite/manage.py
     shell < /tmp/createsuperuser.py
@@ -45,8 +48,11 @@
   become_user: "{{ graphite_user }}"
   when: superuser_created is changed
 
-- name: manage.py - Create lock file
+- name: manage.py - Create lock file  # noqa no-handler
   file:
     path: "{{ graphite_install_path }}/webapp/graphite/.superuser_created"
+    owner: root
+    group: root
+    mode: 0644
     state: touch
   when: superuser_created is changed

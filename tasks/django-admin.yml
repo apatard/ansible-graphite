@@ -1,10 +1,10 @@
 ---
 
 - name: django-admin.py - Inspect graphite db
-  command:  django-admin.py inspectdb
+  command: django-admin.py inspectdb
   environment:
     DJANGO_SETTINGS_MODULE: graphite.settings
-    PYTHONPATH: "{{ graphite_install_path}}/webapp/"
+    PYTHONPATH: "{{ graphite_install_path }}/webapp/"
   become: yes
   become_user: "{{ graphite_user }}"
   register: result
@@ -14,15 +14,15 @@
     ansible_ssh_pipelining: true
 
 - name: django-admin.py - Check for secret key warning
-  command: echo SECRET_KEY is set to an unsafe default.
-  failed_when: "'SECRET_KEY' in result.stderr"
-  changed_when: False
+  assert:
+    that:
+      - "'SECRET_KEY' not in result.stderr"
 
 - name: django-admin.py - Sync/create database
   command: django-admin.py migrate --run-syncdb --noinput
   environment:
     DJANGO_SETTINGS_MODULE: graphite.settings
-    PYTHONPATH: "{{ graphite_install_path}}/webapp/"
+    PYTHONPATH: "{{ graphite_install_path }}/webapp/"
   become: yes
   become_user: "{{ graphite_user }}"
   when: result.stdout.find("AccountMygraph") == -1
@@ -35,33 +35,38 @@
     --noinput
   environment:
     DJANGO_SETTINGS_MODULE: graphite.settings
-    PYTHONPATH: "{{ graphite_install_path}}/webapp/"
+    PYTHONPATH: "{{ graphite_install_path }}/webapp/"
   become: yes
   become_user: "{{ graphite_user }}"
   register: superuser_created
   args:
     creates: "{{ graphite_install_path }}/webapp/graphite/.superuser_created"
 
-- name: django-admin.py - Prepare to set up superuser password
+- name: django-admin.py - Prepare to set up superuser password  # noqa no-handler
   template:
     src: createsuperuser.py.j2
     dest: /tmp/createsuperuser.py
+    owner: "{{ graphite_user }}"
+    group: "{{ graphite_user }}"
+    mode: 0700
   when: superuser_created is changed
-  register: debug2
 
-- name: django-admin.py - Set superuser password
+- name: django-admin.py - Set superuser password  # noqa no-handler
   shell: >
-    django-admin.py 
+    django-admin.py
     shell < /tmp/createsuperuser.py
   environment:
     DJANGO_SETTINGS_MODULE: graphite.settings
-    PYTHONPATH: "{{ graphite_install_path}}/webapp/"
+    PYTHONPATH: "{{ graphite_install_path }}/webapp/"
   become: yes
   become_user: "{{ graphite_user }}"
   when: superuser_created is changed
 
-- name: django-admin.py - Create lock file
+- name: django-admin.py - Create lock file  # noqa no-handler
   file:
     path: "{{ graphite_install_path }}/webapp/graphite/.superuser_created"
     state: touch
+    owner: root
+    group: root
+    mode: 0644
   when: superuser_created is changed

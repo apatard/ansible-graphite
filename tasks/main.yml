@@ -57,10 +57,11 @@
     and ansible_distribution_release != "xenial"
     and ansible_distribution_release != "stretch"
 
-- name: Set perms for graphite storage
+- name: Set perms for graphite storage  # noqa no-handler
   file:
     path: "{{ graphite_install_path }}/storage"
     owner: "{{ graphite_user }}"
+    group: "{{ graphite_user }}"
     recurse: yes
     state: directory
   when: graphite_installed_old is changed or graphite_installed_new is changed
@@ -69,14 +70,21 @@
   template:
     src: local_settings.py.j2
     dest: "{{ graphite_install_path }}/webapp/graphite/local_settings.py"
+    owner: root
+    group: root
+    mode: 0644
   notify:
     - restart carbon-cache
     - restart carbon-relay
+    - restart uwsgi
 
 - name: Install carbon settings
   template:
     src: carbon.conf.j2
     dest: "{{ graphite_install_path }}/conf/carbon.conf"
+    owner: root
+    group: root
+    mode: 0644
   notify:
     - restart carbon-cache
     - restart carbon-relay
@@ -85,6 +93,9 @@
   template:
     src: relay-rules.conf.j2
     dest: "{{ graphite_install_path }}/conf/relay-rules.conf"
+    owner: root
+    group: root
+    mode: 0644
   notify:
     - restart carbon-cache
     - restart carbon-relay
@@ -93,6 +104,9 @@
   template:
     src: storage-schemas.conf.j2
     dest: "{{ graphite_install_path }}/conf/storage-schemas.conf"
+    owner: root
+    group: root
+    mode: 0644
   notify:
     - restart carbon-cache
     - restart carbon-relay
@@ -101,15 +115,21 @@
   template:
     src: wsgi.py.j2
     dest: "{{ graphite_install_path }}/conf/wsgi.py"
+    owner: root
+    group: root
+    mode: 0644
   notify: restart uwsgi
-  when:  graphite_install_version is version_compare("1.0.0", "<")
+  when: graphite_install_version is version_compare("1.0.0", "<")
 
 - name: Install 1.0 uwsgi configuration
   template:
     src: wsgi-1.0.x.py.j2
     dest: "{{ graphite_install_path }}/conf/wsgi.py"
+    owner: root
+    group: root
+    mode: 0644
   notify: restart uwsgi
-  when:  graphite_install_version is version_compare("1.0.0", ">=")
+  when: graphite_install_version is version_compare("1.0.0", ">=")
 
 - name: Use manage.py to run configuration tasks
   include: manage.yml
@@ -128,16 +148,19 @@
   service:
     name: uwsgi
     enabled: yes
-  when: graphite_enable_uwsgi
+    state: started
+  when: graphite_enable_uwsgi | bool
 
 - name: Enable carbon-cache service
   service:
     name: carbon-cache
     enabled: yes
-  when: graphite_enable_carbon_cache
+    state: started
+  when: graphite_enable_carbon_cache | bool
 
 - name: Enable carbon-relay service
   service:
     name: carbon-relay
     enabled: yes
-  when: graphite_enable_carbon_relay
+    state: started
+  when: graphite_enable_carbon_relay | bool

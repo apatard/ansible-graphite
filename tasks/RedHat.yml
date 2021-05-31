@@ -28,43 +28,43 @@
   template:
     src: carbon_cache_systemd.j2
     dest: /etc/systemd/system/carbon-cache.service
-  register: ccunit
-
-- name: Reload systemd if unit file has changed
-  shell: systemctl daemon-reload
-  when: ccunit is changed
-  notify: restart carbon-cache
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload systemd for carbon
 
 - name: Install systemd unit carbon-relay.service
   template:
     src: carbon_relay_systemd.j2
     dest: /etc/systemd/system/carbon-relay.service
-  register: ccunit
-
-- name: Reload systemd if unit file has changed
-  shell: systemctl daemon-reload
-  when: ccunit is changed
-  notify: restart carbon-relay
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload systemd for carbon
 
 - name: Install uwsgi default settings
   template:
     src: redhat_uwsgi_default.ini.j2
     dest: /etc/uwsgi_default.ini
+    owner: root
+    group: root
+    mode: 0644
   notify: restart uwsgi
 
 - name: Install uwsgi graphite config
   template:
     src: uwsgi_graphite.ini.j2
     dest: /etc/uwsgi_graphite.ini
+    owner: root
+    group: root
+    mode: 0644
   notify: restart uwsgi
 
 - name: Install systemd unit uwsgi.service
   template:
     src: uwsgi_systemd.j2
     dest: /etc/systemd/system/uwsgi.service
-  register: uwsgiunit
-
-- name: Reload systemd if unit file has changed
-  shell: systemctl daemon-reload
-  when: uwsgiunit is changed
-  notify: restart uwsgi
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload systemd for carbon
