@@ -9,5 +9,5 @@ module = wsgi:application
 pidfile = /run/uwsgi/graphite/pid
 {% endif %}
 {% for opts in uwsgi_graphite_extraopts %}
-{{ opts.option }}={{ opts.value }}
+{{ opts.option }} = {{ opts.value }}
 {% endfor %}
