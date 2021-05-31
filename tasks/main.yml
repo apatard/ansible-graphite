@@ -70,7 +70,7 @@
 - name: Install webapp settings
   template:
     src: local_settings.py.j2
-    dest: "{{ graphite_install_path }}/webapp/graphite/local_settings.py"
+    dest: "{{ graphite_web_path }}/local_settings.py"
     owner: root
     group: root
     mode: 0644
@@ -82,7 +82,7 @@
 - name: Install carbon settings
   template:
     src: carbon.conf.j2
-    dest: "{{ graphite_install_path }}/conf/carbon.conf"
+    dest: "{{ graphite_carbon_conf_path }}/carbon.conf"
     owner: root
     group: root
     mode: 0644
@@ -93,7 +93,7 @@
 - name: Install relay rules
   template:
     src: relay-rules.conf.j2
-    dest: "{{ graphite_install_path }}/conf/relay-rules.conf"
+    dest: "{{ graphite_carbon_conf_path }}/relay-rules.conf"
     owner: root
     group: root
     mode: 0644
@@ -104,7 +104,7 @@
 - name: Install storage schemas
   template:
     src: storage-schemas.conf.j2
-    dest: "{{ graphite_install_path }}/conf/storage-schemas.conf"
+    dest: "{{ graphite_carbon_conf_path }}/storage-schemas.conf"
     owner: root
     group: root
     mode: 0644
@@ -115,7 +115,7 @@
 - name: Install 0.9 uwsgi configuration
   template:
     src: wsgi.py.j2
-    dest: "{{ graphite_install_path }}/conf/wsgi.py"
+    dest: "{{ graphite_uwsgi_path }}/wsgi.py"
     owner: root
     group: root
     mode: 0644
@@ -125,7 +125,7 @@
 - name: Install 1.0 uwsgi configuration
   template:
     src: wsgi-1.0.x.py.j2
-    dest: "{{ graphite_install_path }}/conf/wsgi.py"
+    dest: "{{ graphite_uwsgi_path }}/wsgi.py"
     owner: root
     group: root
     mode: 0644

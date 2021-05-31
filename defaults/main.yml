@@ -186,3 +186,6 @@ graphite_install_requirements:
 
 graphite_django_admin: django-admin.py
 graphite_debian_python: python
+graphite_web_path: "{{ graphite_install_path }}/webapp/graphite/"
+graphite_carbon_conf_path: "{{ graphite_install_path }}/conf/"
+graphite_uwsgi_path: "{{ graphite_install_path }}/conf/"

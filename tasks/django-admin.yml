@@ -40,7 +40,7 @@
   become_user: "{{ graphite_user }}"
   register: superuser_created
   args:
-    creates: "{{ graphite_install_path }}/webapp/graphite/.superuser_created"
+    creates: "{{ graphite_web_path }}/.superuser_created"
 
 - name: django-admin.py - Prepare to set up superuser password  # noqa no-handler
   template:
@@ -64,7 +64,7 @@
 
 - name: django-admin.py - Create lock file  # noqa no-handler
   file:
-    path: "{{ graphite_install_path }}/webapp/graphite/.superuser_created"
+    path: "{{ graphite_web_path }}/.superuser_created"
     state: touch
     owner: root
     group: root
