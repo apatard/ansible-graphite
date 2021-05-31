@@ -15,6 +15,7 @@
       - "uwsgi-plugin-{{ graphite_debian_python }}"
       - sudo
       - libffi-dev
+      - acl
 
 - name: Debian Jessie and 1.0.2+ | cffi needs to be updated to a newer version
   pip:
