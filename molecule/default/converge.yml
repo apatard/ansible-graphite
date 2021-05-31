@@ -1,0 +1,39 @@
+---
+
+# Tests executed from Travis
+
+- hosts: all
+  become: yes
+  roles:
+    - role: nsg.graphite
+      graphite_secret_key: testtest123
+      # graphite_install_version: "{{ version }}"
+      graphite_cache_graphite_url: 'http://127.0.0.1:8080'
+      uwsgi_graphite_extraopts:
+        - option: plugins
+          value: python3
+      graphite_debian_python: python3
+
+- hosts: all
+  become: yes
+  tasks:
+
+    - name: Install nginx
+      package:
+        name: nginx
+        state: present
+
+    - name: Install nginx config
+      template:
+        src: templates/graphite.conf.j2
+        dest: /etc/nginx/conf.d/graphite.conf
+        owner: root
+        group: root
+        mode: 0640
+      notify: restart nginx
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
