@@ -53,17 +53,38 @@
     mode: 0644
   notify: restart uwsgi
 
-- name: Enable uwsgi graphite config
-  file:
-    src: /etc/uwsgi/apps-available/graphite.ini
-    dest: /etc/uwsgi/apps-enabled/graphite.ini
-    state: link
-  notify: restart uwsgi
+- name: handle uwsgi
+  block:
+    - name: Install uwsgi packages with apt
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+          - uwsgi
+          - "uwsgi-plugin-{{ graphite_debian_python }}"
 
-- name: Make sure we have /run/uwsgi/graphite
-  file:
-    path: /run/uwsgi/graphite
-    state: directory
-    owner: "{{ graphite_user }}"
-    group: "{{ graphite_user }}"
-    mode: 0755
+    - name: Install uwsgi graphite config
+      template:
+        src: uwsgi_graphite.ini.j2
+        dest: /etc/uwsgi/apps-available/graphite.ini
+        owner: root
+        group: root
+        mode: 0644
+      notify: restart uwsgi
+
+    - name: Enable uwsgi graphite config
+      file:
+        src: /etc/uwsgi/apps-available/graphite.ini
+        dest: /etc/uwsgi/apps-enabled/graphite.ini
+        state: link
+      notify: restart uwsgi
+
+    - name: Make sure we have /run/uwsgi/graphite
+      file:
+        path: /run/uwsgi/graphite
+        state: directory
+        owner: "{{ graphite_user }}"
+        group: "{{ graphite_user }}"
+        mode: 0755
+  when: graphite_enable_uwsgi | bool

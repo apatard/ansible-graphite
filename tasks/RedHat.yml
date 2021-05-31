@@ -23,6 +23,8 @@
 - name: Install uwsgi with pip
   pip:
     name: uwsgi
+  when:
+    - graphite_enable_uwsgi | bool
 
 - name: Install systemd unit carbon-cache.service
   template:
@@ -50,6 +52,8 @@
     group: root
     mode: 0644
   notify: restart uwsgi
+  when:
+    - graphite_enable_uwsgi | bool
 
 - name: Install uwsgi graphite config
   template:
@@ -59,6 +63,8 @@
     group: root
     mode: 0644
   notify: restart uwsgi
+  when:
+    - graphite_enable_uwsgi | bool
 
 - name: Install systemd unit uwsgi.service
   template:
@@ -68,3 +74,5 @@
     group: root
     mode: 0644
   notify: reload systemd for carbon
+  when:
+    - graphite_enable_uwsgi | bool
