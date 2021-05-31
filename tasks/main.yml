@@ -42,6 +42,7 @@
     ansible_distribution_release == "bionic"
     or ansible_distribution_release == "xenial"
     or ansible_distribution_release == "stretch"
+    or ansible_distribution_release == "buster"
 
 - name: Setup graphite with pip
   pip:
