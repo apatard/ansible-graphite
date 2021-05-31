@@ -121,9 +121,9 @@ graphite_aggregator_write_back_frequency: 0
 graphite_cluster_servers: []
 
 # Optional extra options for uwsgi_graphite.ini
-uwsgi_graphite_extraopts: []
-uwsgi_graphite_processes: 2
-uwsgi_graphite_socket: '127.0.0.1:3031'
+graphite_uwsgi_extraopts: []
+graphite_uwsgi_processes: 2
+graphite_uwsgi_socket: '127.0.0.1:3031'
 
 graphite_install_path: "/opt/graphite"
 graphite_install_requirements:

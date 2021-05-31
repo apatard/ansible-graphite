@@ -9,7 +9,7 @@
       graphite_secret_key: testtest123
       # graphite_install_version: "{{ version }}"
       graphite_cache_graphite_url: 'http://127.0.0.1:8080'
-      uwsgi_graphite_extraopts:
+      graphite_uwsgi_extraopts:
         - option: plugins
           value: python3
       graphite_debian_python: python3

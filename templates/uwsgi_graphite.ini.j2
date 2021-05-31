@@ -1,6 +1,6 @@
 [uwsgi]
-processes = {{ uwsgi_graphite_processes }}
-socket = {{ uwsgi_graphite_socket }}
+processes = {{ graphite_uwsgi_processes }}
+socket = {{ graphite_uwsgi_socket }}
 gid = {{ graphite_user }}
 uid = {{ graphite_user }}
 chdir = /opt/graphite/conf
@@ -8,6 +8,6 @@ module = wsgi:application
 {% if ansible_os_family == "RedHat" %}
 pidfile = /run/uwsgi/graphite/pid
 {% endif %}
-{% for opts in uwsgi_graphite_extraopts %}
+{% for opts in graphite_uwsgi_extraopts %}
 {{ opts.option }} = {{ opts.value }}
 {% endfor %}

@@ -36,11 +36,11 @@ server {
 }
 ```
 
-The uwsgi socket can be configured through `uwsgi_graphite_socket`.
+The uwsgi socket can be configured through `graphite_uwsgi_socket`.
 
-Alternatively, you can define `uwsgi_graphite_extraopts` with additional uwsgi configuration, which can e.g. enable http on port 8080 or add basic auth:
+Alternatively, you can define `graphite_uwsgi_extraopts` with additional uwsgi configuration, which can e.g. enable http on port 8080 or add basic auth:
 ```yaml
-uwsgi_graphite_extraopts:
+graphite_uwsgi_extraopts:
   - option: http
     value: "{{ ansible_default_ipv4.address }}:8080"
   - option: plugins
