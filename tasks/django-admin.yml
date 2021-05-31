@@ -1,7 +1,7 @@
 ---
 
 - name: django-admin.py - Inspect graphite db
-  command: django-admin.py inspectdb
+  command: "{{ graphite_django_admin }} inspectdb"
   environment:
     DJANGO_SETTINGS_MODULE: graphite.settings
     PYTHONPATH: "{{ graphite_install_path }}/webapp/"
@@ -19,7 +19,7 @@
       - "'SECRET_KEY' not in result.stderr"
 
 - name: django-admin.py - Sync/create database
-  command: django-admin.py migrate --run-syncdb --noinput
+  command: "{{ graphite_django_admin }} migrate --run-syncdb --noinput"
   environment:
     DJANGO_SETTINGS_MODULE: graphite.settings
     PYTHONPATH: "{{ graphite_install_path }}/webapp/"
@@ -29,7 +29,7 @@
 
 - name: django-admin.py - Create superuser account
   command: >
-    django-admin.py createsuperuser
+    {{ graphite_django_admin }} createsuperuser
     --username={{ graphite_admin_username }}
     --email={{ graphite_admin_email }}
     --noinput
@@ -53,7 +53,7 @@
 
 - name: django-admin.py - Set superuser password  # noqa no-handler
   shell: >
-    django-admin.py
+    {{ graphite_django_admin }}
     shell < /tmp/createsuperuser.py
   environment:
     DJANGO_SETTINGS_MODULE: graphite.settings
