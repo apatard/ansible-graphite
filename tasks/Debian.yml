@@ -6,13 +6,13 @@
     update_cache: yes
   vars:
     packages:
-      - python-pip
-      - python-dev
+      - "{{ graphite_debian_python }}-pip"
+      - "{{ graphite_debian_python }}-dev"
       - libcairo2-dev
-      - python-cairo
+      - "{{ graphite_debian_python }}-cairo"
       - fontconfig
       - uwsgi
-      - uwsgi-plugin-python
+      - "uwsgi-plugin-{{ graphite_debian_python }}"
       - sudo
       - libffi-dev
 
