@@ -1,6 +1,12 @@
 # See {{ graphite_install_path }}/conf/carbon.conf.example for more information.
 
 [cache]
+{% if ansible_distribution == 'Debian' and graphite_pip_install is sameas false %}
+STORAGE_DIR    = /var/lib/graphite/
+CONF_DIR       = /etc/carbon/
+LOG_DIR        = /var/log/carbon/
+PID_DIR        = /var/run/
+{% endif %}
 LOCAL_DATA_DIR = {{ graphite_cache_local_data_dir }}
 DATABASE = {{ graphite_cache_database }}
 ENABLE_LOGROTATION = {{ graphite_cache_enable_log_rotation }}

@@ -3,7 +3,13 @@ processes = {{ graphite_uwsgi_processes }}
 socket = {{ graphite_uwsgi_socket }}
 gid = {{ graphite_user }}
 uid = {{ graphite_user }}
+{% if graphite_pip_install is sameas true %}
 chdir = /opt/graphite/conf
+{% else %}
+{% if ansible_os_family == "Debian" %}
+chdir = /usr/lib/python3/dist-packages/graphite
+{% endif %}
+{% endif %}
 module = wsgi:application
 {% if ansible_os_family == "RedHat" %}
 pidfile = /run/uwsgi/graphite/pid

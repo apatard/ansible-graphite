@@ -6,6 +6,7 @@
   user:
     name: "{{ graphite_user }}"
     comment: "Graphite user"
+  when: graphite_pip_install | bool
 
 - name: "Run tasks on a RedHat based system"
   include: RedHat.yml
@@ -39,10 +40,11 @@
     - restart carbon-cache
     - restart carbon-relay
   when: >
-    ansible_distribution_release == "bionic"
+    (ansible_distribution_release == "bionic"
     or ansible_distribution_release == "xenial"
     or ansible_distribution_release == "stretch"
-    or ansible_distribution_release == "buster"
+    or ansible_distribution_release == "buster")
+    and (graphite_pip_install | bool)
 
 - name: Setup graphite with pip
   pip:
@@ -57,6 +59,7 @@
     ansible_distribution_release != "bionic"
     and ansible_distribution_release != "xenial"
     and ansible_distribution_release != "stretch"
+    and (graphite_pip_install | bool)
 
 - name: Set perms for graphite storage  # noqa no-handler
   file:
@@ -65,7 +68,9 @@
     group: "{{ graphite_user }}"
     recurse: yes
     state: directory
-  when: graphite_installed_old is changed or graphite_installed_new is changed
+  when: >
+    (graphite_installed_old is changed or graphite_installed_new is changed)
+    and (graphite_pip_install | bool)
 
 - name: Install webapp settings
   template:
