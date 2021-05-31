@@ -1,0 +1,24 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: libvirt
+lint: |
+  set -e
+  yamllint .
+  ansible-lint
+  flake8
+platforms:
+  - name: instance-graphite-${MOLECULE_SCENARIO_NAME}
+    box: debian/buster64
+provisioner:
+  name: ansible
+  config_options:
+    ssh_connection:
+      pipelining: true
+    diff:
+      always: yes
+verifier:
+  name: ansible

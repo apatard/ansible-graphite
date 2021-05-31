@@ -1,0 +1,119 @@
+---
+
+- hosts: all
+  become: yes
+  tasks:
+    - name: Make sure processes are running
+      command: "pgrep {{ item }}"
+      with_items:
+        - carbon-cache
+        - uwsgi
+        - nginx
+      changed_when: false
+
+    - name: Get sample config file parameters
+      shell: |
+        set -o pipefail
+        zgrep -vE '^#' /usr/share/doc/graphite-carbon/examples/carbon.conf.example.gz | awk -F '=' '/=/{ print $1 }'
+      args:
+        executable: /bin/bash
+      register: carbon_conf_example_default_params
+      changed_when: false
+
+    - name: Make sure that we have set all default params in carbon.conf
+      command: "grep -E '^{{ item }}' /etc/carbon/carbon.conf"
+      with_items: "{{ carbon_conf_example_default_params.stdout_lines }}"
+      changed_when: false
+
+    - name: Get set config file parameters
+      shell: |
+        set -o pipefail
+        grep -vE '^#' /etc/carbon/carbon.conf | awk '/=/{ print $1 }'
+      args:
+        executable: /bin/bash
+      register: carbon_conf_params
+      changed_when: false
+
+    - name: Make sure that carbon.conf is not using params not found in the example file
+      command: "zgrep '{{ item }}' /usr/share/doc/graphite-carbon/examples/carbon.conf.example.gz"
+      with_items: "{{ carbon_conf_params.stdout_lines }}"
+      changed_when: false
+
+    - name: "Make sure we have a Graphite install at localhost:8080"
+      shell: |
+        set -o pipefail
+        curl -s http://localhost:8080 | grep 'Graphite Browser'
+      args:
+        executable: /bin/bash
+      changed_when: false
+
+    - name: "Make sure that the static content works"  # noqa command-instead-of-module
+      get_url:
+        url: "http://localhost:8080/static/js/composer.js"
+        dest: /tmp/composer.js
+
+    - name: Download a sample graph
+      get_url:
+        url: 'http://localhost:8080/render/?width=586&height=308&_salt=1448804805.156&target=carbon.agents.*-a.cache.size'
+        dest: /tmp/out
+      changed_when: false
+
+    - name: Make sure that we got a image
+      shell: |
+        set -o pipefail
+        file /tmp/out | grep -i image
+      args:
+        executable: /bin/bash
+      changed_when: false
+
+    - name: "Insert a metric to carbon"
+      shell: |
+        set -o pipefail
+        echo "local.random.diceroll 4711 $(date +%s)" | nc -w 2 0.0.0.0 2003
+      args:
+        executable: /bin/bash
+      changed_when: false
+
+    - name: Wait 5 sec
+      wait_for:
+        timeout: 5
+
+    - name: Search for the value from graphite-web
+      shell: |
+        set -o pipefail
+        curl -s 'http://localhost:8080/render/?_salt=1448817576.96&target=local.random.diceroll&format=csv' | grep ',4711.0'
+      args:
+        executable: /bin/bash
+      changed_when: false
+
+    - name: Remove false positives from carbon creates.log
+      lineinfile:
+        dest: /opt/graphite/storage/log/carbon-cache/carbon-cache-a/creates.log
+        line: "- REMOVED -"
+        regexp: "{{ item }}"
+      with_items:
+        - "creating database file.*errors.wsp"
+        - "creating database metric carbon.agents.*errors"
+        - "new metric carbon.agents.*a.errors matched schema carbon"
+        - "new metric carbon.agents.*a.errors matched aggregation schema default"
+      failed_when: False
+
+    - name: Search for errors in logs
+      shell: test -f {{ item }} && cat {{ item }}
+      register: logout
+      changed_when: false
+      failed_when: >
+        'error' in logout.stdout or
+        'Error' in logout.stdout or
+        'ERROR' in logout.stdout
+      with_items:
+        - /var/log/uwsgi_graphite.log
+        - /var/log/uwsgi/app/graphite.log
+        - /var/log/nginx/graphite.error.log
+        - /var/log/nginx/error.log
+        - /opt/graphite/storage/log/webapp/info.log
+        - /opt/graphite/storage/log/webapp/exception.log
+        - /opt/graphite/storage/log/carbon-cache/carbon-cache-a/query.log
+        - /opt/graphite/storage/log/carbon-cache/carbon-cache-a/listener.log
+        - /opt/graphite/storage/log/carbon-cache/carbon-cache-a/creates.log
+        - /opt/graphite/storage/log/carbon-cache/carbon-cache-a/console.log
