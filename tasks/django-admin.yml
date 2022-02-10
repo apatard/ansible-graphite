@@ -9,6 +9,7 @@
   become_user: "{{ graphite_user }}"
   register: result
   changed_when: False
+  check_mode: no
   # See: https://github.com/ansible/ansible/issues/16048#issuecomment-229012509
   vars:
     ansible_ssh_pipelining: true
