@@ -43,6 +43,7 @@
     (ansible_distribution_release == "bionic"
     or ansible_distribution_release == "xenial"
     or ansible_distribution_release == "stretch"
+    or ansible_distribution_release == "bullseye"
     or ansible_distribution_release == "buster")
     and (graphite_pip_install | bool)
 
