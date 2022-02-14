@@ -1,5 +1,5 @@
 ---
-graphite_install_version: 1.1.5
+graphite_install_version: 1.1.8
 
 graphite_user: graphite
 graphite_secret_key: UNSAFE_DEFAULT
@@ -183,6 +183,33 @@ graphite_install_requirements:
     - urllib3==1.24.1
     - wheel==0.24.0
     - whisper==1.1.5
+  1.1.8:
+    - attrs
+    - Automat
+    - cachetools
+    - cairocffi
+    - carbon==1.1.8
+    - constantly
+    - Django>=1.8,<3.1
+    - django-tagging==0.4.3
+    - graphite-web==1.1.8
+    - gunicorn
+    - hyperlink
+    - idna
+    - incremental
+    - pycparser
+    - PyHamcrest
+    - pyparsing>=2.3.0
+    - pytz
+    - scandir
+    - six
+    - Twisted>=13.2.0
+    - txAMQP==0.8
+    - python-memcached==1.58
+    - urllib3==1.24.1
+    - wheel
+    - whisper==1.1.8
+    - whitenoise==4.1.4
 
 graphite_django_admin: django-admin.py
 graphite_debian_python: python
